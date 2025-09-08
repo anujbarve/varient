@@ -5,23 +5,34 @@ services:
     environment:
       - MYSQL_DATABASE=php_docker
       - MYSQL_USER=php_docker
-      - MYSQL_PASSWORD=password # should be stored in .env
+      - MYSQL_PASSWORD=password   # move this to .env in production
       - MYSQL_ALLOW_EMPTY_PASSWORD=1
     volumes:
       - "./db:/docker-entrypoint-initdb.d"
+    networks:
+      - laravel_net
 
   www:
     image: php:apache
     volumes:
       - "./:/var/www/html"
-    ports:
-      - "8080:80"   # changed from 80:80 to 8080:80
-      - "8443:443"  # optional, avoid clashing with system 443
+    depends_on:
+      - db
+    networks:
+      - laravel_net
+    # No ports section → Coolify will assign a domain
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    ports:
-      - "8081:80"
     environment:
       - PMA_HOST=db
       - PMA_PORT=3306
+    depends_on:
+      - db
+    networks:
+      - laravel_net
+    # No ports section → Coolify will assign a domain
+
+networks:
+  laravel_net:
+    driver: bridge
