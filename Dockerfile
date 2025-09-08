@@ -1,11 +1,9 @@
 FROM php:8.2-apache
 
+# Enable Apache rewrite module (optional)
 RUN a2enmod rewrite
 
-# Set Laravel public as DocumentRoot
-RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|' /etc/apache2/sites-available/000-default.conf
-
-# Give www-data ownership of the app
+# Give www-data ownership of the files
 RUN chown -R www-data:www-data /var/www/html
 
 WORKDIR /var/www/html
