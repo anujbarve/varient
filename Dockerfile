@@ -1,13 +1,22 @@
 FROM php:8.2-apache
 
-# Enable Apache rewrite module
-RUN a2enmod rewrite
+# Install GD extension and other common PHP extensions
+RUN apt-get update && apt-get install -y \
+        libfreetype6-dev \
+        libjpeg62-turbo-dev \
+        libpng-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd
 
-# Ensure index.php is used as DirectoryIndex
-RUN echo "DirectoryIndex index.php index.html" >> /etc/apache2/apache2.conf
+COPY . /var/www/html/
 
-# Give ownership to www-data
+RUN chmod -R 775 /var/www/html/uploads
+
+# Set owner to www-data (Apache user)
 RUN chown -R www-data:www-data /var/www/html
 
-# Set working directory
-WORKDIR /var/www/html
+
+RUN a2enmod rewrite
+
+# Expose port 80
+EXPOSE 80
