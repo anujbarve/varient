@@ -6,7 +6,7 @@ services:
     environment:
       - MYSQL_DATABASE=php_docker
       - MYSQL_USER=php_docker
-      - MYSQL_PASSWORD=password   # in production, move to .env
+      - MYSQL_PASSWORD=password   # move to .env in production
       - MYSQL_ALLOW_EMPTY_PASSWORD=1
     volumes:
       - "./db:/docker-entrypoint-initdb.d"
@@ -14,21 +14,17 @@ services:
       - laravel_net
 
   www:
-    image: php:apache
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: laravel_www
     volumes:
       - "./:/var/www/html"
+      - "./docker/apache.conf:/etc/apache2/sites-available/000-default.conf:ro"
     depends_on:
       - db
     networks:
       - laravel_net
-    user: "www-data:www-data"
-    environment:
-      APACHE_RUN_USER: www-data
-      APACHE_RUN_GROUP: www-data
-    command: >
-      bash -c "sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|' /etc/apache2/sites-available/000-default.conf &&
-               apache2-foreground"
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
