@@ -20,7 +20,6 @@ services:
     container_name: laravel_www
     volumes:
       - "./:/var/www/html"
-      - "./docker/apache.conf:/etc/apache2/sites-available/000-default.conf:ro"
     depends_on:
       - db
     networks:
