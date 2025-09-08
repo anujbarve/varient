@@ -1,40 +1,25 @@
-version: "3.9"
-
+version: '3'
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: laravel_app
-    restart: unless-stopped
-    volumes:
-      - ./:/var/www/html
-    depends_on:
-      - db
-
-  webserver:
-    image: nginx:alpine
-    container_name: laravel_web
-    restart: unless-stopped
-    ports:
-      - "8080:80"
-    volumes:
-      - ./:/var/www/html
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - app
-
-  db:
-    image: mysql:8.0
-    container_name: laravel_db
-    restart: unless-stopped
+  db: 
+    image: mysql:latest
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: laravel
-      MYSQL_USER: laravel
-      MYSQL_PASSWORD: laravel
+      - MYSQL_DATABASE=php_docker
+      - MYSQL_USER=php_docker
+      - MYSQL_PASSWORD=password # this should live in a env var
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1 # equivalent to True
     volumes:
-      - dbdata:/var/lib/mysql
-
-volumes:
-  dbdata:
+      - "./db:/docker-entrypoint-initdb.d" # this is how we persist a sql db even when container stops
+  www:
+    image: php:apache
+    volumes:
+      - "./:/var/www/html" # sync the current dir on local machine to the dir of container
+    ports:
+      - 80:80
+      - 443:443 # for future ssl traffic
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8001:80
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
