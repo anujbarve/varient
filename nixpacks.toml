@@ -1,0 +1,102 @@
+[phases.setup]
+nixPkgs = [
+  "php83",
+  "php83Extensions.curl",
+  "php83Extensions.mbstring",
+  "php83Extensions.pdo_mysql",
+  "php83Extensions.tokenizer",
+  "php83Extensions.xml",
+  "php83Extensions.fileinfo",
+  "composer",
+  "nodejs_20"
+]
+
+[phases.install]
+cmds = [
+  # Ensure .env exists
+  "cp .env.example .env || true",
+  # Fix writable env file
+  "chmod 0644 .env",
+  # Install PHP dependencies
+  "composer install --no-dev --optimize-autoloader",
+  # Fix storage & cache permissions
+  "chmod -R 775 storage bootstrap/cache"
+]
+
+[phases.build]
+cmds = [
+  # If frontend build is required
+  "npm install && npm run build || true"
+]
+
+[start]
+# Start Laravel using built-in server (ok for small deployments)
+cmd = "php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
+[phases.setup]
+nixPkgs = [
+  "php83",
+  "php83Extensions.curl",
+  "php83Extensions.mbstring",
+  "php83Extensions.pdo_mysql",
+  "php83Extensions.tokenizer",
+  "php83Extensions.xml",
+  "php83Extensions.fileinfo",
+  "composer",
+  "nodejs_20"
+]
+
+[phases.install]
+cmds = [
+  # Ensure .env exists
+  "cp .env.example .env || true",
+  # Fix writable env file
+  "chmod 0644 .env",
+  # Install PHP dependencies
+  "composer install --no-dev --optimize-autoloader",
+  # Fix storage & cache permissions
+  "chmod -R 775 storage bootstrap/cache"
+]
+
+[phases.build]
+cmds = [
+  # If frontend build is required
+  "npm install && npm run build || true"
+]
+
+[start]
+# Start Laravel using built-in server (ok for small deployments)
+cmd = "php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
+[phases.setup]
+nixPkgs = [
+  "php83",
+  "php83Extensions.curl",
+  "php83Extensions.mbstring",
+  "php83Extensions.pdo_mysql",
+  "php83Extensions.tokenizer",
+  "php83Extensions.xml",
+  "php83Extensions.fileinfo",
+  "composer",
+  "nodejs_20"
+]
+
+[phases.install]
+cmds = [
+  # Ensure .env exists
+  "cp .env.example .env || true",
+  # Fix writable env file
+  "chmod 0644 .env",
+  # Install PHP dependencies
+  "composer install --no-dev --optimize-autoloader",
+  # Fix storage & cache permissions
+  "chmod -R 775 storage bootstrap/cache"
+]
+
+[phases.build]
+cmds = [
+  # If frontend build is required
+  "npm install && npm run build || true"
+]
+
+[start]
+# Start Laravel using built-in server (ok for small deployments)
+cmd = "php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
