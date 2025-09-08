@@ -1,11 +1,12 @@
 version: '3'
 services:
-  db: 
+  db:
     image: mysql:latest
+    container_name: laravel_db
     environment:
       - MYSQL_DATABASE=php_docker
       - MYSQL_USER=php_docker
-      - MYSQL_PASSWORD=password   # move this to .env in production
+      - MYSQL_PASSWORD=password   # in production, move to .env
       - MYSQL_ALLOW_EMPTY_PASSWORD=1
     volumes:
       - "./db:/docker-entrypoint-initdb.d"
@@ -14,24 +15,35 @@ services:
 
   www:
     image: php:apache
+    container_name: laravel_www
     volumes:
       - "./:/var/www/html"
     depends_on:
       - db
     networks:
       - laravel_net
-    # No ports section → Coolify will assign a domain
+    user: "www-data:www-data"
+    environment:
+      APACHE_RUN_USER: www-data
+      APACHE_RUN_GROUP: www-data
+    command: >
+      bash -c "sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|' /etc/apache2/sites-available/000-default.conf &&
+               apache2-foreground"
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
+    container_name: laravel_phpmyadmin
     environment:
-      - PMA_HOST=db
-      - PMA_PORT=3306
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: php_docker
+      PMA_PASSWORD: password
+      PMA_UPLOAD_MAX_FILESIZE: 64M
+      PMA_MAX_EXECUTION_TIME: 600
     depends_on:
       - db
     networks:
       - laravel_net
-    # No ports section → Coolify will assign a domain
 
 networks:
   laravel_net:
