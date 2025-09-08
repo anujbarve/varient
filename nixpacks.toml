@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ["php", "phpPackages.composer"]
+
+[phases.build]
+cmds = [
+  "composer install --no-dev --optimize-autoloader",
+  "chmod 0644 .env"  # fix permissions
+]
+
+[start]
+cmd = "php -S 0.0.0.0:8080 -t public"
